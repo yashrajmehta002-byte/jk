@@ -1,0 +1,31 @@
+name: Dual APK Build
+on:
+  push:
+    branches: [ main ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Build Admin Debug APK
+        run: ./gradlew :adminApp:assembleDebug
+      - name: Build Agent Debug APK
+        run: ./gradlew :agentApp:assembleDebug
+      - name: Upload Admin APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: adminApp-debug
+          path: adminApp/build/outputs/apk/debug/adminApp-debug.apk
+      - name: Upload Agent APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: agentApp-debug
+          path: agentApp/build/outputs/apk/debug/agentApp-debug.apk
